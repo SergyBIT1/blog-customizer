@@ -20,6 +20,7 @@ import {
 	fontFamilyOptions,
 	fontSizeOptions,
 } from 'src/constants/articleProps';
+import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 
 type ArticleParamsFormProps = {
 	display: ArticleStateType;
@@ -33,9 +34,7 @@ export const ArticleParamsForm = ({
 	const [isOpen, setIsOpen] = useState(false);
 	const [currentDisplay, setCurrentDisplay] = useState(display);
 
-	// <ArticleStateType>(defaultArticleState);
-
-	const formRef = useRef<HTMLFormElement>(null);
+	const asideRef = useRef<HTMLDivElement>(null);
 
 	const formSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -48,10 +47,16 @@ export const ArticleParamsForm = ({
 		setDisplay(defaultArticleState);
 	};
 
-	// useEffect(() => {
-	// 	// Начальная установка параметров
-	// 	setCurrentStyle(defaultArticleState);
-	// }, []);
+	const handleClickOutside = () => {
+		setIsOpen(false);
+	};
+
+	useOutsideClickClose({
+		isOpen,
+		rootRef: asideRef,
+		onClose: handleClickOutside,
+		onChange: handleClickOutside,
+	});
 
 	useEffect(() => {
 		const closeEsc = (event: KeyboardEvent) => {
@@ -60,13 +65,6 @@ export const ArticleParamsForm = ({
 			}
 		};
 		document.addEventListener('keydown', closeEsc);
-
-		const handleClickOutside = (event: MouseEvent) => {
-			if (formRef.current && !formRef.current.contains(event.target as Node)) {
-				setIsOpen(false);
-			}
-		};
-		document.addEventListener('mousedown', handleClickOutside);
 
 		return () => {
 			document.removeEventListener('keydown', closeEsc);
@@ -98,10 +96,10 @@ export const ArticleParamsForm = ({
 		<>
 			<ArrowButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
 			<aside
+				ref={asideRef}
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
 				<form
 					className={styles.form}
-					ref={formRef}
 					onSubmit={formSubmitHandler}
 					onReset={formResetHandler}>
 					<Text as='h2' size={31} weight={800} family={'open-sans'} uppercase>
