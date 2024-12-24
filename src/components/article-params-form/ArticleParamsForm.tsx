@@ -31,28 +31,28 @@ export const ArticleParamsForm = ({
 	display,
 	setDisplay,
 }: ArticleParamsFormProps) => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [currentDisplay, setCurrentDisplay] = useState(display);
 
 	const asideRef = useRef<HTMLDivElement>(null);
 
-	const formSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+	const submitFormHandler = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setDisplay(currentDisplay);
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
-	const formResetHandler = () => {
+	const resetFormHandler = () => {
 		setCurrentDisplay(defaultArticleState);
 		setDisplay(defaultArticleState);
 	};
 
 	const handleClickOutside = () => {
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	useOutsideClickClose({
-		isOpen,
+		isMenuOpen,
 		rootRef: asideRef,
 		onClose: handleClickOutside,
 		onChange: handleClickOutside,
@@ -61,7 +61,7 @@ export const ArticleParamsForm = ({
 	useEffect(() => {
 		const closeEsc = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
-				setIsOpen(false);
+				setIsMenuOpen(false);
 			}
 		};
 		document.addEventListener('keydown', closeEsc);
@@ -70,7 +70,7 @@ export const ArticleParamsForm = ({
 			document.removeEventListener('keydown', closeEsc);
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [isOpen]);
+	}, [isMenuOpen]);
 
 	const handleFontFamilyChange = (item: OptionType) => {
 		setCurrentDisplay((prev) => ({ ...prev, fontFamilyOption: item }));
@@ -94,14 +94,19 @@ export const ArticleParamsForm = ({
 
 	return (
 		<>
-			<ArrowButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+			<ArrowButton
+				isOpen={isMenuOpen}
+				onClick={() => setIsMenuOpen(!isMenuOpen)}
+			/>
 			<aside
 				ref={asideRef}
-				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
+				className={clsx(styles.container, {
+					[styles.container_open]: isMenuOpen,
+				})}>
 				<form
 					className={styles.form}
-					onSubmit={formSubmitHandler}
-					onReset={formResetHandler}>
+					onSubmit={submitFormHandler}
+					onReset={resetFormHandler}>
 					<Text as='h2' size={31} weight={800} family={'open-sans'} uppercase>
 						Задайте параметры
 					</Text>
